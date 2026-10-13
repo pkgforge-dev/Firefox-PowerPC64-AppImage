@@ -1,21 +1,19 @@
 <div align="center">
 
-# Firefox-AppImage 🐧
+# Firefox-PowerPC64-AppImage 🐧
 
-[![GitHub Downloads](https://img.shields.io/github/downloads/pkgforge-dev/Firefox-AppImage/total?logo=github&label=GitHub%20Downloads)](https://github.com/pkgforge-dev/Firefox-AppImage/releases/latest)
-[![CI Build Status](https://github.com/pkgforge-dev/Firefox-AppImage/actions/workflows/appimage.yml/badge.svg)](https://github.com/pkgforge-dev/Firefox-AppImage/releases/latest)
-[![AnyLinux](https://img.shields.io/badge/AnyLinux-compatible-green?logo=linux&logoColor=white)](https://pkgforge-dev.github.io/Anylinux-AppImages/)
-[![Latest Stable Release](https://img.shields.io/github/v/release/pkgforge-dev/Firefox-AppImage?display_name=release)](https://github.com/pkgforge-dev/Firefox-AppImage/releases/latest)
+[![GitHub Downloads](https://img.shields.io/github/downloads/pkgforge-dev/Firefox-PowerPC64-AppImage/total?logo=github&label=GitHub%20Downloads)](https://github.com/pkgforge-dev/Firefox-PowerPC64-AppImage/releases/latest)
+[![CI Build Status](https://github.com/pkgforge-dev/Firefox-PowerPC64-AppImage/actions/workflows/appimage.yml/badge.svg)](https://github.com/pkgforge-dev/Firefox-PowerPC64-AppImage/releases/latest)
+[![Latest Stable Release](https://img.shields.io/github/v/release/pkgforge-dev/Firefox-PowerPC64-AppImage?display_name=release)](https://github.com/pkgforge-dev/Firefox-PowerPC64-AppImage/releases/latest)
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/mozilla/gecko-dev/master/browser/branding/official/default128.png" width="128" alt="Firefox Logo" />
 </p>
 
 
-| Architecture | Stable | Beta | Dev Edition | ESR | Upstream URL |
-| :---: | :---: | :---: | :---: | :---: | :---: |
-| x86_64 (64-bit Intel/AMD) | [Download](https://github.com/pkgforge-dev/Firefox-AppImage/releases/latest/download/Firefox-157.0.1-anylinux-x86_64.AppImage) | [Download](https://github.com/pkgforge-dev/Firefox-AppImage/releases/latest/download/Firefox_Beta-158.0b5-anylinux-x86_64.AppImage) | [Download](https://github.com/pkgforge-dev/Firefox-AppImage/releases/latest/download/Firefox_Developer_Edition-158.0b5-anylinux-x86_64.AppImage) | [Download](https://github.com/pkgforge-dev/Firefox-AppImage/releases/latest/download/Firefox_ESR-140.17.0esr-anylinux-x86_64.AppImage) | [Click here](https://www.mozilla.org/firefox) |
-| aarch64 (64-bit ARM) | [Download](https://github.com/pkgforge-dev/Firefox-AppImage/releases/latest/download/Firefox-157.0.1-anylinux-aarch64.AppImage) | [Download](https://github.com/pkgforge-dev/Firefox-AppImage/releases/latest/download/Firefox_Beta-158.0b5-anylinux-aarch64.AppImage) | [Download](https://github.com/pkgforge-dev/Firefox-AppImage/releases/latest/download/Firefox_Developer_Edition-158.0b5-anylinux-aarch64.AppImage) | [Download](https://github.com/pkgforge-dev/Firefox-AppImage/releases/latest/download/Firefox_ESR-140.17.0esr-anylinux-aarch64.AppImage) | [Click here](https://www.mozilla.org/firefox) |
+| Latest Stable Release | Upstream URL |
+| :---: | :---: |
+| [Click here](https://github.com/pkgforge-dev/Firefox-PowerPC64-AppImage/releases/latest) | [Click here](https://github.com/mozilla-firefox/firefox) |
 
 </div>
 
