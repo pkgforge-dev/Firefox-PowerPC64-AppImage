@@ -4,47 +4,68 @@ concurrency:
   cancel-in-progress: true
 on:
   schedule:
-    - cron: "0 7 */11 * *" # We default to rebuilding every 21 days, change this to your liking
+    - cron: "0 7 1/21 * *" # We default to rebuilding every 21 days, change this to your liking
   workflow_dispatch: {}
 
 jobs:
   build:
-    name: "${{ matrix.name }} (${{ matrix.channel }}, ${{ matrix.arch }})"
+    name: "${{ matrix.name }} (${{ matrix.arch }})"
     runs-on: ${{ matrix.runs-on }}
     strategy:
       matrix:
-        channel: [stable, beta, devedition, esr]
-        arch: [x86_64, aarch64]
         include:
-          - runs-on: ubuntu-latest
-            name: Build AppImage
-            arch: x86_64
-          # comment out these 3 lines if aarch64 is not wanted
-          - runs-on: ubuntu-24.04-arm
-            name: Build AppImage
-            arch: aarch64
+          #- { runs-on: ubuntu-latest, name: Build AppImage, arch: x86_64 }
+          # comment out this line if aarch64 is not wanted
+          - { runs-on: ubuntu-24.04-arm, name: Build AppImage, arch: aarch64 }
     container: ghcr.io/pkgforge-dev/archlinux:latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Preparing Container
-        uses: pkgforge-dev/anylinux-setup-action@0964f2258d6c93d1391359978dde081fd8b3c6af # v2
+        uses: pkgforge-dev/anylinux-setup-action@ba7321e11074f9e387a0634e653d09b115d576cd # v6
       - name: Install Dependencies
         run: /bin/sh ./get-dependencies.sh
-        env:
-          FIREFOX_CHANNEL: ${{ matrix.channel }}
       - name: Make AppImage
         run: /bin/sh ./make-appimage.sh
-        env:
-          FIREFOX_CHANNEL: ${{ matrix.channel }}
       - name: Upload artifact
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: AppImage-${{ matrix.channel }}-${{ matrix.arch }}
+          name: AppImage-${{ matrix.arch }}
+          path: dist
+
+  # this part runs via QEMU so expect higher CI times
+  build-additional-cpu-arches:
+    if: true # set to true to build the below arches
+    name: "${{ matrix.name }} (${{ matrix.arch }})"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # comment out the arches that are not wanted
+          # note 'if: false' is set by default and these are all turned off
+          #- { name: Build AppImage, arch: riscv64, platform: linux/riscv64 }
+          #- { name: Build AppImage, arch: loongarch64, platform: linux/loong64 }
+          - { name: Build AppImage, arch: ppc64le, platform: linux/ppc64le }
+          - { name: Build AppImage, arch: ppc64, platform: linux/ppc64 } # BE
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Build AppImage (emulated)
+        uses: pkgforge-dev/anylinux-setup-action/emulated@ba7321e11074f9e387a0634e653d09b115d576cd # v6
+        with:
+          platform: ${{ matrix.platform }}
+      - name: Upload artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: AppImage-${{ matrix.arch }}
           path: dist
 
   release:
-    if: ${{ github.ref_name == 'main' }}
-    needs: [build]
+    # !cancelled() lets a release happen if build-additional-cpu-arches if turned off
+    if: >-
+      ${{ !cancelled() && github.ref_name == 'main'
+      && needs.build.result == 'success'
+      && needs.build-additional-cpu-arches.result != 'failure' }}
+    needs: [build, build-additional-cpu-arches]
     permissions: write-all
     runs-on: ubuntu-latest
     steps:
@@ -52,26 +73,5 @@ jobs:
         with:
           pattern: AppImage-*
           merge-multiple: true
-      - name: Save channel versions
-        run: |
-          STABLE_VER=$(ls Firefox-[0-9]*.AppImage 2>/dev/null | head -n1 | sed -E 's/Firefox-([^/]+)-anylinux.*/\1/')
-          BETA_VER=$(ls Firefox_Beta-*.AppImage 2>/dev/null | head -n1 | sed -E 's/Firefox_Beta-([^/]+)-anylinux.*/\1/')
-          DEV_VER=$(ls Firefox_Developer_Edition-*.AppImage 2>/dev/null | head -n1 | sed -E 's/Firefox_Developer_Edition-([^/]+)-anylinux.*/\1/')
-          ESR_VER=$(ls Firefox_ESR-*.AppImage 2>/dev/null | head -n1 | sed -E 's/Firefox_ESR-([^/]+)-anylinux.*/\1/')
-          echo "STABLE_VER=$STABLE_VER" >> "$GITHUB_ENV"
-          echo "BETA_VER=$BETA_VER" >> "$GITHUB_ENV"
-          echo "DEV_VER=$DEV_VER" >> "$GITHUB_ENV"
-          echo "ESR_VER=$ESR_VER" >> "$GITHUB_ENV"
       - name: Release AppImage
         uses: pkgforge-dev/make-stable-appimage-release@4ed3d48ccb065352b6e6c0db6d39885b201c54a0 #v1.1
-      - name: Update README download links
-        run: |
-          [ -z "$STABLE_VER" ] && [ -f ./LATEST_VERSION ] && STABLE_VER=$(cat ./LATEST_VERSION)
-          [ -n "$STABLE_VER" ] && sed -i -E "s/Firefox-[^/]+-anylinux/Firefox-${STABLE_VER}-anylinux/g" README.md
-          [ -n "$BETA_VER" ] && sed -i -E "s/Firefox_Beta-[^/]+-anylinux/Firefox_Beta-${BETA_VER}-anylinux/g" README.md
-          [ -n "$DEV_VER" ] && sed -i -E "s/Firefox_Developer_Edition-[^/]+-anylinux/Firefox_Developer_Edition-${DEV_VER}-anylinux/g" README.md
-          [ -n "$ESR_VER" ] && sed -i -E "s/Firefox_ESR-[^/]+-anylinux/Firefox_ESR-${ESR_VER}-anylinux/g" README.md
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add README.md
-          git diff --staged --quiet || (git commit -m "update README download links [skip ci]" && git push)
