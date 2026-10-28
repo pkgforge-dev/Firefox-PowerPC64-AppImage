@@ -13,10 +13,7 @@ export DEPLOY_VULKAN=1
 export URUNTIME_PRELOAD=1
 
 # Deploy dependencies
-LD_LIBRARY_PATH=$PWD/AppDir/bin quick-sharun \
-  /usr/lib/libavcodec.so* \
-  /usr/lib/libcanberra.so* \
-  /usr/bin/firefox
+quick-sharun /usr/lib/libavcodec.so* /usr/lib/libcanberra.so* /usr/bin/firefox
 
 echo 'MOZ_LEGACY_PROFILES=1' >>./AppDir/.env
 echo 'MOZ_APP_LAUNCHER=${APPIMAGE}' >>./AppDir/.env
