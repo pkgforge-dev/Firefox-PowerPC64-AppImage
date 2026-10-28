@@ -14,7 +14,6 @@ export URUNTIME_PRELOAD=1
 
 # Deploy dependencies
 LD_LIBRARY_PATH=$PWD/AppDir/bin quick-sharun \
-  ./AppDir/bin/* \
   /usr/lib/libavcodec.so* \
   /usr/lib/libcanberra.so* \
   /usr/bin/firefox
