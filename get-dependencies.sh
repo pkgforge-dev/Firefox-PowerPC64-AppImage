@@ -6,8 +6,8 @@ ARCH=$(uname -m)
 
 echo "Installing package dependencies..."
 echo "---------------------------------------------------------------"
-pacman -Syu --noconfirm libcanberra firefox
+pacman -Syu --noconfirm libcanberra ffmpeg firefox
 
 echo "Installing debloated packages..."
 echo "---------------------------------------------------------------"
-get-debloated-pkgs --add-common --prefer-nano intel-media-driver-mini ffmpeg-mini
+get-debloated-pkgs --add-common --prefer-nano
